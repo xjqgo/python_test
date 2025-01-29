@@ -59,3 +59,4 @@ if __name__ == "__main__":
     # 在这里设置断点，然后按Shift+F9开始调试
     main() 
     print("程序结束 Git来了")
+    print("程序结束 Git 3次保存")
