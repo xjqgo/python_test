@@ -1,0 +1,952 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电影数据展示</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .search-container {
+            margin: 20px 0;
+        }
+        .search-input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .movie-card {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .movie-card.highlight {
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            background-color: #fff3cd;
+        }
+        .movie-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+        }
+        .movie-info {
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .movie-score {
+            color: #ff6b6b;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .stats {
+            margin-bottom: 20px;
+            color: #666;
+        }
+        .timestamp {
+            color: #999;
+            font-size: 14px;
+        }
+        .no-results {
+            text-align: center;
+            color: #666;
+            padding: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>电影数据展示</h1>
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="输入电影名称、类别、地区等进行搜索..." id="searchInput">
+            </div>
+            <div class="stats">总共收录了 100 部电影</div>
+            <div class="timestamp">生成时间：2025-01-20 00:39:36</div>
+        </div>
+        <div class="no-results">未找到匹配的电影</div>
+        <div class="movie-grid">
+
+            <div class="movie-card" data-title="霸王别姬 - Farewell My Concubine" data-category="剧情 爱情" data-region="中国内地、中国香港">
+                <div class="movie-title">霸王别姬 - Farewell My Concubine</div>
+                <div class="movie-info">类别：剧情 爱情</div>
+                <div class="movie-info">地区：中国内地、中国香港</div>
+                <div class="movie-info">时长：171 分钟</div>
+                <div class="movie-info">上映时间：1993-07-26 上映</div>
+                <div class="movie-score">评分：9.5</div>
+            </div>
+            <div class="movie-card" data-title="这个杀手不太冷 - Léon" data-category="剧情 动作 犯罪" data-region="法国">
+                <div class="movie-title">这个杀手不太冷 - Léon</div>
+                <div class="movie-info">类别：剧情 动作 犯罪</div>
+                <div class="movie-info">地区：法国</div>
+                <div class="movie-info">时长：110 分钟</div>
+                <div class="movie-info">上映时间：1994-09-14 上映</div>
+                <div class="movie-score">评分：9.5</div>
+            </div>
+            <div class="movie-card" data-title="肖申克的救赎 - The Shawshank Redemption" data-category="剧情 犯罪" data-region="美国">
+                <div class="movie-title">肖申克的救赎 - The Shawshank Redemption</div>
+                <div class="movie-info">类别：剧情 犯罪</div>
+                <div class="movie-info">地区：美国</div>
+                <div class="movie-info">时长：142 分钟</div>
+                <div class="movie-info">上映时间：1994-09-10 上映</div>
+                <div class="movie-score">评分：9.5</div>
+            </div>
+            <div class="movie-card" data-title="泰坦尼克号 - Titanic" data-category="剧情 爱情 灾难" data-region="美国">
+                <div class="movie-title">泰坦尼克号 - Titanic</div>
+                <div class="movie-info">类别：剧情 爱情 灾难</div>
+                <div class="movie-info">地区：美国</div>
+                <div class="movie-info">时长：194 分钟</div>
+                <div class="movie-info">上映时间：1998-04-03 上映</div>
+                <div class="movie-score">评分：9.5</div>
+            </div>
+            <div class="movie-card" data-title="罗马假日 - Roman Holiday" data-category="剧情 喜剧 爱情" data-region="美国">
+                <div class="movie-title">罗马假日 - Roman Holiday</div>
+                <div class="movie-info">类别：剧情 喜剧 爱情</div>
+                <div class="movie-info">地区：美国</div>
+                <div class="movie-info">时长：118 分钟</div>
+                <div class="movie-info">上映时间：1953-08-20 上映</div>
+                <div class="movie-score">评分：9.5</div>
+            </div>
+            <div class="movie-card" data-title="唐伯虎点秋香 - Flirting Scholar" data-category="喜剧 爱情 古装" data-region="中国香港">
+                <div class="movie-title">唐伯虎点秋香 - Flirting Scholar</div>
+                <div class="movie-info">类别：喜剧 爱情 古装</div>
+                <div class="movie-info">地区：中国香港</div>
+                <div class="movie-info">时长：102 分钟</div>
+                <div class="movie-info">上映时间：1993-07-01 上映</div>
+                <div class="movie-score">评分：9.5</div>
+            </div>
+            <div class="movie-card" data-title="乱世佳人 - Gone with the Wind" data-category="剧情 爱情 历史 战争" data-region="美国">
+                <div class="movie-title">乱世佳人 - Gone with the Wind</div>
+                <div class="movie-info">类别：剧情 爱情 历史 战争</div>
+                <div class="movie-info">地区：美国</div>
+                <div class="movie-info">时长：238 分钟</div>
+                <div class="movie-info">上映时间：1939-12-15 上映</div>
+                <div class="movie-score">评分：9.5</div>
+            </div>
+            <div class="movie-card" data-title="喜剧之王 - The King of Comedy" data-category="剧情 喜剧 爱情" data-region="中国香港">
+                <div class="movie-title">喜剧之王 - The King of Comedy</div>
+                <div class="movie-info">类别：剧情 喜剧 爱情</div>
+                <div class="movie-info">地区：中国香港</div>
+                <div class="movie-info">时长：85 分钟</div>
+                <div class="movie-info">上映时间：1999-02-13 上映</div>
+                <div class="movie-score">评分：9.5</div>
+            </div>
+            <div class="movie-card" data-title="楚门的世界 - The Truman Show" data-category="剧情 科幻" data-region="美国">
+                <div class="movie-title">楚门的世界 - The Truman Show</div>
+                <div class="movie-info">类别：剧情 科幻</div>
+                <div class="movie-info">地区：美国</div>
+                <div class="movie-info">时长：103 分钟</div>
+                <div class="movie-info">上映时间：</div>
+                <div class="movie-score">评分：9.0</div>
+            </div>
+            <div class="movie-card" data-title="狮子王 - The Lion King" data-category="动画 歌舞 冒险" data-region="美国">
+                <div class="movie-title">狮子王 - The Lion King</div>
+                <div class="movie-info">类别：动画 歌舞 冒险</div>
+                <div class="movie-info">地区：美国</div>
+                <div class="movie-info">时长：89 分钟</div>
+                <div class="movie-info">上映时间：1995-07-15 上映</div>
+                <div class="movie-score">评分：9.0</div>
+            </div>
+            <div class="movie-card" data-title="V字仇杀队 - V for Vendetta" data-category="剧情 动作 科幻 惊悚" data-region="美国、英国、德国">
+                <div class="movie-title">V字仇杀队 - V for Vendetta</div>
+                <div class="movie-info">类别：剧情 动作 科幻 惊悚</div>
+                <div class="movie-info">地区：美国、英国、德国</div>
+                <div class="movie-info">时长：132 分钟</div>
+                <div class="movie-info">上映时间：2005-12-11 上映</div>
+                <div class="movie-score">评分：8.9</div>
+            </div>
+            <div class="movie-card" data-title="少年派的奇幻漂流 - Life of Pi" data-category="剧情 奇幻 冒险" data-region="美国、中国台湾、英国、加拿大">
+                <div class="movie-title">少年派的奇幻漂流 - Life of Pi</div>
+                <div class="movie-info">类别：剧情 奇幻 冒险</div>
+                <div class="movie-info">地区：美国、中国台湾、英国、加拿大</div>
+                <div class="movie-info">时长：127 分钟</div>
+                <div class="movie-info">上映时间：2012-11-22 上映</div>
+                <div class="movie-score">评分：8.9</div>
+            </div>
+            <div class="movie-card" data-title="美丽心灵 - A Beautiful Mind" data-category="剧情 传记" data-region="美国">
+                <div class="movie-title">美丽心灵 - A Beautiful Mind</div>
+                <div class="movie-info">类别：剧情 传记</div>
+                <div class="movie-info">地区：美国</div>
+                <div class="movie-info">时长：135 分钟</div>
+                <div class="movie-info">上映时间：2001-12-13 上映</div>
+                <div class="movie-score">评分：8.8</div>
+            </div>
+            <div class="movie-card" data-title="初恋这件小事 - สิ่งเล็กเล็กที่เรียกว่า...รัก" data-category="喜剧 爱情" data-region="泰国">
+                <div class="movie-title">初恋这件小事 - สิ่งเล็กเล็กที่เรียกว่า...รัก</div>
+                <div class="movie-info">类别：喜剧 爱情</div>
+                <div class="movie-info">地区：泰国</div>
+                <div class="movie-info">时长：118 分钟</div>
+                <div class="movie-info">上映时间：2012-06-05 上映</div>
+                <div class="movie-score">评分：8.9</div>
+            </div>
+            <div class="movie-card" data-title="借东西的小人阿莉埃蒂 - 借りぐらしのアリエッティ" data-category="动画 奇幻 冒险" data-region="日本">
+                <div class="movie-title">借东西的小人阿莉埃蒂 - 借りぐらしのアリエッティ</div>
+                <div class="movie-info">类别：动画 奇幻 冒险</div>
+                <div class="movie-info">地区：日本</div>
+                <div class="movie-info">时长：94 分钟</div>
+                <div class="movie-info">上映时间：2010-07-17 上映</div>
+                <div class="movie-score">评分：8.8</div>
+            </div>
+            <div class="movie-card" data-title="一一 - Yi yi: A One and a Two" data-category="剧情 爱情 家庭" data-region="中国台湾、日本">
+                <div class="movie-title">一一 - Yi yi: A One and a Two</div>
+                <div class="movie-info">类别：剧情 爱情 家庭</div>
+                <div class="movie-info">地区：中国台湾、日本</div>
+                <div class="movie-info">时长：173 分钟</div>
+                <div class="movie-info">上映时间：2000-05-15 上映</div>
+                <div class="movie-score">评分：8.8</div>
+            </div>
+            <div class="movie-card" data-title="美丽人生 - La vita è bella" data-category="战争 剧情 爱情" data-region="意大利">
+                <div class="movie-title">美丽人生 - La vita è bella</div>
+                <div class="movie-info">类别：战争 剧情 爱情</div>
+                <div class="movie-info">地区：意大利</div>
+                <div class="movie-info">时长：116 分钟</div>
+                <div class="movie-info">上映时间：2020-01-03 上映</div>
+                <div class="movie-score">评分：9.1</div>
+            </div>
+            <div class="movie-card" data-title="海上钢琴师 - La leggenda del pianista sull'oceano" data-category="剧情 爱情 音乐" data-region="意大利">
+                <div class="movie-title">海上钢琴师 - La leggenda del pianista sull'oceano</div>
+                <div class="movie-info">类别：剧情 爱情 音乐</div>
+                <div class="movie-info">地区：意大利</div>
+                <div class="movie-info">时长：126 分钟</div>
+                <div class="movie-info">上映时间：2019-11-15 上映</div>
+                <div class="movie-score">评分：9.1</div>
+            </div>
+            <div class="movie-card" data-title="千与千寻 - 千と千尋の神隠し" data-category="动画 冒险 奇幻 家庭" data-region="日本">
+                <div class="movie-title">千与千寻 - 千と千尋の神隠し</div>
+                <div class="movie-info">类别：动画 冒险 奇幻 家庭</div>
+                <div class="movie-info">地区：日本</div>
+                <div class="movie-info">时长：125 分钟</div>
+                <div class="movie-info">上映时间：2019-06-21 上映</div>
+                <div class="movie-score">评分：9.1</div>
+            </div>
+            <div class="movie-card" data-title="迁徙的鸟 - The Travelling Birds" data-category="纪录片" data-region="法国、德国、意大利、西班牙、瑞士">
+                <div class="movie-title">迁徙的鸟 - The Travelling Birds</div>
+                <div class="movie-info">类别：纪录片</div>
+                <div class="movie-info">地区：法国、德国、意大利、西班牙、瑞士</div>
+                <div class="movie-info">时长：98 分钟</div>
+                <div class="movie-info">上映时间：2001-12-12 上映</div>
+                <div class="movie-score">评分：9.1</div>
+            </div>
+            <div class="movie-card" data-title="黄金三镖客 - Il buono, il brutto, il cattivo." data-category="西部 冒险" data-region="意大利、西班牙、西德">
+                <div class="movie-title">黄金三镖客 - Il buono, il brutto, il cattivo.</div>
+                <div class="movie-info">类别：西部 冒险</div>
+                <div class="movie-info">地区：意大利、西班牙、西德</div>
+                <div class="movie-info">时长：161 分钟</div>
+                <div class="movie-info">上映时间：1966-12-23 上映</div>
+                <div class="movie-score">评分：9.1</div>
+            </div>
+            <div class="movie-card" data-title="海洋 - Océans" data-category="纪录片" data-region="法国、瑞士、西班牙、美国、阿联酋">
+                <div class="movie-title">海洋 - Océans</div>
+                <div class="movie-info">类别：纪录片</div>
+                <div class="movie-info">地区：法国、瑞士、西班牙、美国、阿联酋</div>
+                <div class="movie-info">时长：104 分钟</div>
+                <div class="movie-info">上映时间：2011-08-12 上映</div>
+                <div class="movie-score">评分：9.1</div>
+            </div>
+            <div class="movie-card" data-title="我爱你 - 그대를 사랑합니다" data-category="剧情 爱情" data-region="韩国">
+                <div class="movie-title">我爱你 - 그대를 사랑합니다</div>
+                <div class="movie-info">类别：剧情 爱情</div>
+                <div class="movie-info">地区：韩国</div>
+                <div class="movie-info">时长：118 分钟</div>
+                <div class="movie-info">上映时间：2011-02-17 上映</div>
+                <div class="movie-score">评分：9.1</div>
+            </div>
+            <div class="movie-card" data-title="阿飞正传 - Days of Being Wild" data-category="剧情 爱情 犯罪" data-region="中国香港">
+                <div class="movie-title">阿飞正传 - Days of Being Wild</div>
+                <div class="movie-info">类别：剧情 爱情 犯罪</div>
+                <div class="movie-info">地区：中国香港</div>
+                <div class="movie-info">时长：94 分钟</div>
+                <div class="movie-info">上映时间：2018-06-25 上映</div>
+                <div class="movie-score">评分：9.1</div>
+            </div>
+            <div class="movie-card" data-title="7号房的礼物 - 7번방의 선물" data-category="剧情 喜剧 家庭" data-region="韩国">
+                <div class="movie-title">7号房的礼物 - 7번방의 선물</div>
+                <div class="movie-info">类别：剧情 喜剧 家庭</div>
+                <div class="movie-info">地区：韩国</div>
+                <div class="movie-info">时长：127 分钟</div>
+                <div class="movie-info">上映时间：2013-01-23 上映</div>
+                <div class="movie-score">评分：8.8</div>
+            </div>
+            <div class="movie-card" data-title="爱·回家 - 집으로..." data-category="剧情 家庭" data-region="韩国">
+                <div class="movie-title">爱·回家 - 집으로...</div>
+                <div class="movie-info">类别：剧情 家庭</div>
+                <div class="movie-info">地区：韩国</div>
+                <div class="movie-info">时长：80 分钟</div>
+                <div class="movie-info">上映时间：2002-04-05 上映</div>
+                <div class="movie-score">评分：9.1</div>
+            </div>
+            <div class="movie-card" data-title="龙猫 - となりのトトロ" data-category="动画 冒险 奇幻 家庭" data-region="日本">
+                <div class="movie-title">龙猫 - となりのトトロ</div>
+                <div class="movie-info">类别：动画 冒险 奇幻 家庭</div>
+                <div class="movie-info">地区：日本</div>
+                <div class="movie-info">时长：86 分钟</div>
+                <div class="movie-info">上映时间：2018-12-14 上映</div>
+                <div class="movie-score">评分：9.1</div>
+            </div>
+            <div class="movie-card" data-title="七武士 - 七人の侍" data-category="剧情 动作 冒险" data-region="日本">
+                <div class="movie-title">七武士 - 七人の侍</div>
+                <div class="movie-info">类别：剧情 动作 冒险</div>
+                <div class="movie-info">地区：日本</div>
+                <div class="movie-info">时长：207 分钟</div>
+                <div class="movie-info">上映时间：1954-04-26 上映</div>
+                <div class="movie-score">评分：8.8</div>
+            </div>
+            <div class="movie-card" data-title="美国往事 - Once Upon a Time in America" data-category="剧情 犯罪" data-region="意大利、美国">
+                <div class="movie-title">美国往事 - Once Upon a Time in America</div>
+                <div class="movie-info">类别：剧情 犯罪</div>
+                <div class="movie-info">地区：意大利、美国</div>
+                <div class="movie-info">时长：229 分钟</div>
+                <div class="movie-info">上映时间：2015-04-23 上映</div>
+                <div class="movie-score">评分：8.8</div>
+            </div>
+            <div class="movie-card" data-title="完美的世界 - A Perfect World" data-category="剧情 犯罪" data-region="美国">
+                <div class="movie-title">完美的世界 - A Perfect World</div>
+                <div class="movie-info">类别：剧情 犯罪</div>
+                <div class="movie-info">地区：美国</div>
+                <div class="movie-info">时长：138 分钟</div>
+                <div class="movie-info">上映时间：1993-11-24 上映</div>
+                <div class="movie-score">评分：8.8</div>
+            </div>
+            <div class="movie-card" data-title="上帝之城 - Cidade de Deus" data-category="剧情 犯罪" data-region="巴西、法国">
+                <div class="movie-title">上帝之城 - Cidade de Deus</div>
+                <div class="movie-info">类别：剧情 犯罪</div>
+                <div class="movie-info">地区：巴西、法国</div>
+                <div class="movie-info">时长：130 分钟</div>
+                <div class="movie-info">上映时间：</div>
+                <div class="movie-score">评分：8.8</div>
+            </div>
+            <div class="movie-card" data-title="辩护人 - 변호인" data-category="剧情" data-region="韩国">
+                <div class="movie-title">辩护人 - 변호인</div>
+                <div class="movie-info">类别：剧情</div>
+                <div class="movie-info">地区：韩国</div>
+                <div class="movie-info">时长：127 分钟</div>
+                <div class="movie-info">上映时间：2013-12-18 上映</div>
+                <div class="movie-score">评分：8.8</div>
+            </div>
+            <div class="movie-card" data-title="忠犬八公物语 - ハチ公物語" data-category="剧情" data-region="日本">
+                <div class="movie-title">忠犬八公物语 - ハチ公物語</div>
+                <div class="movie-info">类别：剧情</div>
+                <div class="movie-info">地区：日本</div>
+                <div class="movie-info">时长：107 分钟</div>
+                <div class="movie-info">上映时间：1987-08-01 上映</div>
+                <div class="movie-score">评分：8.8</div>
+            </div>
+            <div class="movie-card" data-title="海豚湾 - The Cove" data-category="纪录片" data-region="美国">
+                <div class="movie-title">海豚湾 - The Cove</div>
+                <div class="movie-info">类别：纪录片</div>
+                <div class="movie-info">地区：美国</div>
+                <div class="movie-info">时长：92 分钟</div>
+                <div class="movie-info">上映时间：2009-07-31 上映</div>
+                <div class="movie-score">评分：8.8</div>
+            </div>
+            <div class="movie-card" data-title="英雄本色 - A Better Tomorrow" data-category="剧情 动作 犯罪" data-region="中国香港">
+                <div class="movie-title">英雄本色 - A Better Tomorrow</div>
+                <div class="movie-info">类别：剧情 动作 犯罪</div>
+                <div class="movie-info">地区：中国香港</div>
+                <div class="movie-info">时长：95 分钟</div>
+                <div class="movie-info">上映时间：2017-11-17 上映</div>
+                <div class="movie-score">评分：8.8</div>
+            </div>
+            <div class="movie-card" data-title="恐怖直播 - 더 테러 라이브" data-category="剧情 悬疑 犯罪" data-region="韩国">
+                <div class="movie-title">恐怖直播 - 더 테러 라이브</div>
+                <div class="movie-info">类别：剧情 悬疑 犯罪</div>
+                <div class="movie-info">地区：韩国</div>
+                <div class="movie-info">时长：97 分钟</div>
+                <div class="movie-info">上映时间：2013-07-31 上映</div>
+                <div class="movie-score">评分：8.8</div>
+            </div>
+            <div class="movie-card" data-title="窃听风暴 - Das Leben der Anderen" data-category="剧情 悬疑" data-region="德国">
+                <div class="movie-title">窃听风暴 - Das Leben der Anderen</div>
+                <div class="movie-info">类别：剧情 悬疑</div>
+                <div class="movie-info">地区：德国</div>
+                <div class="movie-info">时长：137 分钟</div>
+                <div class="movie-info">上映时间：2006-03-23 上映</div>
+                <div class="movie-score">评分：8.8</div>
+            </div>
+            <div class="movie-card" data-title="时空恋旅人 - About Time" data-category="喜剧 爱情 奇幻" data-region="英国">
+                <div class="movie-title">时空恋旅人 - About Time</div>
+                <div class="movie-info">类别：喜剧 爱情 奇幻</div>
+                <div class="movie-info">地区：英国</div>
+                <div class="movie-info">时长：123 分钟</div>
+                <div class="movie-info">上映时间：2013-09-04 上映</div>
+                <div class="movie-score">评分：8.8</div>
+            </div>
+            <div class="movie-card" data-title="穿条纹睡衣的男孩 - The Boy in the Striped Pajamas" data-category="剧情 战争" data-region="英国、美国">
+                <div class="movie-title">穿条纹睡衣的男孩 - The Boy in the Striped Pajamas</div>
+                <div class="movie-info">类别：剧情 战争</div>
+                <div class="movie-info">地区：英国、美国</div>
+                <div class="movie-info">时长：94 分钟</div>
+                <div class="movie-info">上映时间：2008-08-28 上映</div>
+                <div class="movie-score">评分：8.8</div>
+            </div>
+            <div class="movie-card" data-title="教父 - The Godfather" data-category="剧情 犯罪" data-region="美国">
+                <div class="movie-title">教父 - The Godfather</div>
+                <div class="movie-info">类别：剧情 犯罪</div>
+                <div class="movie-info">地区：美国</div>
+                <div class="movie-info">时长：175 分钟</div>
+                <div class="movie-info">上映时间：2015-04-18 上映</div>
+                <div class="movie-score">评分：8.8</div>
+            </div>
+            <div class="movie-card" data-title="萤火之森 - 蛍火の杜へ" data-category="剧情 爱情 动画 奇幻" data-region="日本">
+                <div class="movie-title">萤火之森 - 蛍火の杜へ</div>
+                <div class="movie-info">类别：剧情 爱情 动画 奇幻</div>
+                <div class="movie-info">地区：日本</div>
+                <div class="movie-info">时长：45 分钟</div>
+                <div class="movie-info">上映时间：2011-09-17 上映</div>
+                <div class="movie-score">评分：8.8</div>
+            </div>
+            <div class="movie-card" data-title="素媛 - 소원" data-category="剧情" data-region="韩国">
+                <div class="movie-title">素媛 - 소원</div>
+                <div class="movie-info">类别：剧情</div>
+                <div class="movie-info">地区：韩国</div>
+                <div class="movie-info">时长：123 分钟</div>
+                <div class="movie-info">上映时间：2013-10-02 上映</div>
+                <div class="movie-score">评分：8.8</div>
+            </div>
+            <div class="movie-card" data-title="小鞋子 - بچههای آسمان" data-category="剧情 家庭" data-region="伊朗">
+                <div class="movie-title">小鞋子 - بچههای آسمان</div>
+                <div class="movie-info">类别：剧情 家庭</div>
+                <div class="movie-info">地区：伊朗</div>
+                <div class="movie-info">时长：89 分钟</div>
+                <div class="movie-info">上映时间：</div>
+                <div class="movie-score">评分：8.8</div>
+            </div>
+            <div class="movie-card" data-title="熔炉 - 도가니" data-category="剧情" data-region="韩国">
+                <div class="movie-title">熔炉 - 도가니</div>
+                <div class="movie-info">类别：剧情</div>
+                <div class="movie-info">地区：韩国</div>
+                <div class="movie-info">时长：125 分钟</div>
+                <div class="movie-info">上映时间：2011-09-22 上映</div>
+                <div class="movie-score">评分：8.8</div>
+            </div>
+            <div class="movie-card" data-title="大话西游之大圣娶亲 - A Chinese Odyssey Part Two - Cinderella" data-category="喜剧 爱情 奇幻" data-region="中国香港、中国大陆">
+                <div class="movie-title">大话西游之大圣娶亲 - A Chinese Odyssey Part Two - Cinderella</div>
+                <div class="movie-info">类别：喜剧 爱情 奇幻</div>
+                <div class="movie-info">地区：中国香港、中国大陆</div>
+                <div class="movie-info">时长：110 分钟</div>
+                <div class="movie-info">上映时间：2014-10-24 上映</div>
+                <div class="movie-score">评分：8.9</div>
+            </div>
+            <div class="movie-card" data-title="新龙门客栈 - New Dragon Gate Inn" data-category="动作 爱情 武侠 古装" data-region="中国香港、中国大陆">
+                <div class="movie-title">新龙门客栈 - New Dragon Gate Inn</div>
+                <div class="movie-info">类别：动作 爱情 武侠 古装</div>
+                <div class="movie-info">地区：中国香港、中国大陆</div>
+                <div class="movie-info">时长：88 分钟</div>
+                <div class="movie-info">上映时间：2012-02-24 上映</div>
+                <div class="movie-score">评分：8.9</div>
+            </div>
+            <div class="movie-card" data-title="触不可及 - Intouchables" data-category="剧情 喜剧" data-region="法国">
+                <div class="movie-title">触不可及 - Intouchables</div>
+                <div class="movie-info">类别：剧情 喜剧</div>
+                <div class="movie-info">地区：法国</div>
+                <div class="movie-info">时长：112 分钟</div>
+                <div class="movie-info">上映时间：2011-11-02 上映</div>
+                <div class="movie-score">评分：8.9</div>
+            </div>
+            <div class="movie-card" data-title="钢琴家 - The Pianist" data-category="剧情 音乐 传记 历史 战争" data-region="法国、德国、英国、波兰">
+                <div class="movie-title">钢琴家 - The Pianist</div>
+                <div class="movie-info">类别：剧情 音乐 传记 历史 战争</div>
+                <div class="movie-info">地区：法国、德国、英国、波兰</div>
+                <div class="movie-info">时长：150 分钟</div>
+                <div class="movie-info">上映时间：2002-05-24 上映</div>
+                <div class="movie-score">评分：8.9</div>
+            </div>
+            <div class="movie-card" data-title="本杰明·巴顿奇事 - The Curious Case of Benjamin Button" data-category="剧情 爱情 奇幻" data-region="美国">
+                <div class="movie-title">本杰明·巴顿奇事 - The Curious Case of Benjamin Button</div>
+                <div class="movie-info">类别：剧情 爱情 奇幻</div>
+                <div class="movie-info">地区：美国</div>
+                <div class="movie-info">时长：166 分钟</div>
+                <div class="movie-info">上映时间：2008-12-25 上映</div>
+                <div class="movie-score">评分：8.9</div>
+            </div>
+            <div class="movie-card" data-title="倩女幽魂 - A Chinese Ghost Story" data-category="爱情 奇幻 武侠 古装" data-region="中国香港">
+                <div class="movie-title">倩女幽魂 - A Chinese Ghost Story</div>
+                <div class="movie-info">类别：爱情 奇幻 武侠 古装</div>
+                <div class="movie-info">地区：中国香港</div>
+                <div class="movie-info">时长：98 分钟</div>
+                <div class="movie-info">上映时间：2011-04-30 上映</div>
+                <div class="movie-score">评分：8.9</div>
+            </div>
+            <div class="movie-card" data-title="哈利·波特与死亡圣器（下） - Harry Potter and the Deathly Hallows: Part 2" data-category="剧情 悬疑 奇幻 冒险" data-region="英国、美国">
+                <div class="movie-title">哈利·波特与死亡圣器（下） - Harry Potter and the Deathly Hallows: Part 2</div>
+                <div class="movie-info">类别：剧情 悬疑 奇幻 冒险</div>
+                <div class="movie-info">地区：英国、美国</div>
+                <div class="movie-info">时长：130 分钟</div>
+                <div class="movie-info">上映时间：2011-08-04 上映</div>
+                <div class="movie-score">评分：8.9</div>
+            </div>
+            <div class="movie-card" data-title="甜蜜蜜 - Comrades: Almost a Love Story" data-category="剧情 爱情" data-region="中国香港">
+                <div class="movie-title">甜蜜蜜 - Comrades: Almost a Love Story</div>
+                <div class="movie-info">类别：剧情 爱情</div>
+                <div class="movie-info">地区：中国香港</div>
+                <div class="movie-info">时长：118 分钟</div>
+                <div class="movie-info">上映时间：2015-02-13 上映</div>
+                <div class="movie-score">评分：8.9</div>
+            </div>
+            <div class="movie-card" data-title="蝙蝠侠：黑暗骑士崛起 - The Dark Knight Rises" data-category="剧情 动作 科幻 惊悚 犯罪" data-region="美国、英国">
+                <div class="movie-title">蝙蝠侠：黑暗骑士崛起 - The Dark Knight Rises</div>
+                <div class="movie-info">类别：剧情 动作 科幻 惊悚 犯罪</div>
+                <div class="movie-info">地区：美国、英国</div>
+                <div class="movie-info">时长：165 分钟</div>
+                <div class="movie-info">上映时间：2012-08-27 上映</div>
+                <div class="movie-score">评分：8.9</div>
+            </div>
+            <div class="movie-card" data-title="鬼子来了 - Devils on the Doorstep" data-category="剧情 战争" data-region="中国大陆">
+                <div class="movie-title">鬼子来了 - Devils on the Doorstep</div>
+                <div class="movie-info">类别：剧情 战争</div>
+                <div class="movie-info">地区：中国大陆</div>
+                <div class="movie-info">时长：139 分钟</div>
+                <div class="movie-info">上映时间：2000-05-13 上映</div>
+                <div class="movie-score">评分：8.8</div>
+            </div>
+            <div class="movie-card" data-title="无敌破坏王 - Wreck-It Ralph" data-category="喜剧 动画 奇幻 冒险" data-region="美国">
+                <div class="movie-title">无敌破坏王 - Wreck-It Ralph</div>
+                <div class="movie-info">类别：喜剧 动画 奇幻 冒险</div>
+                <div class="movie-info">地区：美国</div>
+                <div class="movie-info">时长：101 分钟</div>
+                <div class="movie-info">上映时间：2012-11-06 上映</div>
+                <div class="movie-score">评分：8.8</div>
+            </div>
+            <div class="movie-card" data-title="致命魔术 - The Prestige" data-category="剧情 悬疑 惊悚" data-region="美国、英国">
+                <div class="movie-title">致命魔术 - The Prestige</div>
+                <div class="movie-info">类别：剧情 悬疑 惊悚</div>
+                <div class="movie-info">地区：美国、英国</div>
+                <div class="movie-info">时长：130 分钟</div>
+                <div class="movie-info">上映时间：2006-10-17 上映</div>
+                <div class="movie-score">评分：8.8</div>
+            </div>
+            <div class="movie-card" data-title="神偷奶爸 - Despicable Me" data-category="喜剧 动画 冒险" data-region="美国、法国">
+                <div class="movie-title">神偷奶爸 - Despicable Me</div>
+                <div class="movie-info">类别：喜剧 动画 冒险</div>
+                <div class="movie-info">地区：美国、法国</div>
+                <div class="movie-info">时长：95 分钟</div>
+                <div class="movie-info">上映时间：2010-06-20 上映</div>
+                <div class="movie-score">评分：8.8</div>
+            </div>
+            <div class="movie-card" data-title="断背山 - Brokeback Mountain" data-category="剧情 爱情 家庭" data-region="美国、加拿大">
+                <div class="movie-title">断背山 - Brokeback Mountain</div>
+                <div class="movie-info">类别：剧情 爱情 家庭</div>
+                <div class="movie-info">地区：美国、加拿大</div>
+                <div class="movie-info">时长：134 分钟</div>
+                <div class="movie-info">上映时间：2005-09-02 上映</div>
+                <div class="movie-score">评分：8.8</div>
+            </div>
+            <div class="movie-card" data-title="怦然心动 - Flipped" data-category="剧情 喜剧 爱情" data-region="美国">
+                <div class="movie-title">怦然心动 - Flipped</div>
+                <div class="movie-info">类别：剧情 喜剧 爱情</div>
+                <div class="movie-info">地区：美国</div>
+                <div class="movie-info">时长：90 分钟</div>
+                <div class="movie-info">上映时间：2010-07-26 上映</div>
+                <div class="movie-score">评分：8.8</div>
+            </div>
+            <div class="movie-card" data-title="驯龙高手 - How to Train Your Dragon" data-category="喜剧 动画 奇幻 冒险" data-region="美国">
+                <div class="movie-title">驯龙高手 - How to Train Your Dragon</div>
+                <div class="movie-info">类别：喜剧 动画 奇幻 冒险</div>
+                <div class="movie-info">地区：美国</div>
+                <div class="movie-info">时长：98 分钟</div>
+                <div class="movie-info">上映时间：2010-05-14 上映</div>
+                <div class="movie-score">评分：8.8</div>
+            </div>
+            <div class="movie-card" data-title="飞屋环游记 - Up" data-category="剧情 喜剧 动画 冒险" data-region="美国">
+                <div class="movie-title">飞屋环游记 - Up</div>
+                <div class="movie-info">类别：剧情 喜剧 动画 冒险</div>
+                <div class="movie-info">地区：美国</div>
+                <div class="movie-info">时长：96 分钟</div>
+                <div class="movie-info">上映时间：2009-08-04 上映</div>
+                <div class="movie-score">评分：8.8</div>
+            </div>
+            <div class="movie-card" data-title="黑客帝国3：矩阵革命 - The Matrix Revolutions" data-category="动作 科幻" data-region="美国、澳大利亚">
+                <div class="movie-title">黑客帝国3：矩阵革命 - The Matrix Revolutions</div>
+                <div class="movie-info">类别：动作 科幻</div>
+                <div class="movie-info">地区：美国、澳大利亚</div>
+                <div class="movie-info">时长：129 分钟</div>
+                <div class="movie-info">上映时间：2003-11-05 上映</div>
+                <div class="movie-score">评分：8.8</div>
+            </div>
+            <div class="movie-card" data-title="速度与激情5 - Fast Five" data-category="动作 犯罪" data-region="美国">
+                <div class="movie-title">速度与激情5 - Fast Five</div>
+                <div class="movie-info">类别：动作 犯罪</div>
+                <div class="movie-info">地区：美国</div>
+                <div class="movie-info">时长：130 分钟</div>
+                <div class="movie-info">上映时间：2011-05-12 上映</div>
+                <div class="movie-score">评分：8.9</div>
+            </div>
+            <div class="movie-card" data-title="勇敢的心 - Braveheart" data-category="剧情 动作 传记 历史 战争" data-region="美国">
+                <div class="movie-title">勇敢的心 - Braveheart</div>
+                <div class="movie-info">类别：剧情 动作 传记 历史 战争</div>
+                <div class="movie-info">地区：美国</div>
+                <div class="movie-info">时长：177 分钟</div>
+                <div class="movie-info">上映时间：1995-05-18 上映</div>
+                <div class="movie-score">评分：8.9</div>
+            </div>
+            <div class="movie-card" data-title="三傻大闹宝莱坞 - 3 Idiots" data-category="剧情 喜剧 爱情 歌舞" data-region="印度">
+                <div class="movie-title">三傻大闹宝莱坞 - 3 Idiots</div>
+                <div class="movie-info">类别：剧情 喜剧 爱情 歌舞</div>
+                <div class="movie-info">地区：印度</div>
+                <div class="movie-info">时长：171 分钟</div>
+                <div class="movie-info">上映时间：2011-12-08 上映</div>
+                <div class="movie-score">评分：8.9</div>
+            </div>
+            <div class="movie-card" data-title="闻香识女人 - Scent of a Woman" data-category="剧情" data-region="美国">
+                <div class="movie-title">闻香识女人 - Scent of a Woman</div>
+                <div class="movie-info">类别：剧情</div>
+                <div class="movie-info">地区：美国</div>
+                <div class="movie-info">时长：157 分钟</div>
+                <div class="movie-info">上映时间：1992-12-23 上映</div>
+                <div class="movie-score">评分：8.9</div>
+            </div>
+            <div class="movie-card" data-title="末代皇帝 - The Last Emperor" data-category="剧情 传记 历史" data-region="英国、意大利、中国大陆、法国、美国">
+                <div class="movie-title">末代皇帝 - The Last Emperor</div>
+                <div class="movie-info">类别：剧情 传记 历史</div>
+                <div class="movie-info">地区：英国、意大利、中国大陆、法国、美国</div>
+                <div class="movie-info">时长：163 分钟</div>
+                <div class="movie-info">上映时间：1987-10-23 上映</div>
+                <div class="movie-score">评分：8.9</div>
+            </div>
+            <div class="movie-card" data-title="风之谷 - 風の谷のナウシカ" data-category="动画 奇幻 冒险" data-region="日本">
+                <div class="movie-title">风之谷 - 風の谷のナウシカ</div>
+                <div class="movie-info">类别：动画 奇幻 冒险</div>
+                <div class="movie-info">地区：日本</div>
+                <div class="movie-info">时长：117 分钟</div>
+                <div class="movie-info">上映时间：</div>
+                <div class="movie-score">评分：8.9</div>
+            </div>
+            <div class="movie-card" data-title="大话西游之月光宝盒 - A Chinese Odyssey" data-category="喜剧 爱情 奇幻 古装" data-region="中国香港、中国大陆">
+                <div class="movie-title">大话西游之月光宝盒 - A Chinese Odyssey</div>
+                <div class="movie-info">类别：喜剧 爱情 奇幻 古装</div>
+                <div class="movie-info">地区：中国香港、中国大陆</div>
+                <div class="movie-info">时长：87 分钟</div>
+                <div class="movie-info">上映时间：2014-10-24 上映</div>
+                <div class="movie-score">评分：8.9</div>
+            </div>
+            <div class="movie-card" data-title="放牛班的春天 - Les choristes" data-category="剧情 音乐" data-region="法国、德国、瑞士">
+                <div class="movie-title">放牛班的春天 - Les choristes</div>
+                <div class="movie-info">类别：剧情 音乐</div>
+                <div class="movie-info">地区：法国、德国、瑞士</div>
+                <div class="movie-info">时长：97 分钟</div>
+                <div class="movie-info">上映时间：2004-10-16 上映</div>
+                <div class="movie-score">评分：8.9</div>
+            </div>
+            <div class="movie-card" data-title="当幸福来敲门 - The Pursuit of Happyness" data-category="剧情 家庭 传记" data-region="美国">
+                <div class="movie-title">当幸福来敲门 - The Pursuit of Happyness</div>
+                <div class="movie-info">类别：剧情 家庭 传记</div>
+                <div class="movie-info">地区：美国</div>
+                <div class="movie-info">时长：117 分钟</div>
+                <div class="movie-info">上映时间：2008-01-17 上映</div>
+                <div class="movie-score">评分：8.9</div>
+            </div>
+            <div class="movie-card" data-title="幽灵公主 - もののけ姫" data-category="动画 奇幻 冒险" data-region="日本">
+                <div class="movie-title">幽灵公主 - もののけ姫</div>
+                <div class="movie-info">类别：动画 奇幻 冒险</div>
+                <div class="movie-info">地区：日本</div>
+                <div class="movie-info">时长：134 分钟</div>
+                <div class="movie-info">上映时间：1998-05-01 上映</div>
+                <div class="movie-score">评分：8.9</div>
+            </div>
+            <div class="movie-card" data-title="十二怒汉 - 12 Angry Men" data-category="剧情" data-region="美国">
+                <div class="movie-title">十二怒汉 - 12 Angry Men</div>
+                <div class="movie-info">类别：剧情</div>
+                <div class="movie-info">地区：美国</div>
+                <div class="movie-info">时长：96 分钟</div>
+                <div class="movie-info">上映时间：1957-04-13 上映</div>
+                <div class="movie-score">评分：8.9</div>
+            </div>
+            <div class="movie-card" data-title="搏击俱乐部 - Fight Club" data-category="剧情 动作 悬疑 惊悚" data-region="美国、德国">
+                <div class="movie-title">搏击俱乐部 - Fight Club</div>
+                <div class="movie-info">类别：剧情 动作 悬疑 惊悚</div>
+                <div class="movie-info">地区：美国、德国</div>
+                <div class="movie-info">时长：139 分钟</div>
+                <div class="movie-info">上映时间：1999-09-10 上映</div>
+                <div class="movie-score">评分：8.9</div>
+            </div>
+            <div class="movie-card" data-title="疯狂原始人 - The Croods" data-category="喜剧 动画 冒险" data-region="美国">
+                <div class="movie-title">疯狂原始人 - The Croods</div>
+                <div class="movie-info">类别：喜剧 动画 冒险</div>
+                <div class="movie-info">地区：美国</div>
+                <div class="movie-info">时长：98 分钟</div>
+                <div class="movie-info">上映时间：2013-04-20 上映</div>
+                <div class="movie-score">评分：8.9</div>
+            </div>
+            <div class="movie-card" data-title="阿凡达 - Avatar" data-category="动作 科幻 冒险" data-region="美国、英国">
+                <div class="movie-title">阿凡达 - Avatar</div>
+                <div class="movie-info">类别：动作 科幻 冒险</div>
+                <div class="movie-info">地区：美国、英国</div>
+                <div class="movie-info">时长：162 分钟</div>
+                <div class="movie-info">上映时间：2010-01-04 上映</div>
+                <div class="movie-score">评分：8.9</div>
+            </div>
+            <div class="movie-card" data-title="哈尔的移动城堡 - ハウルの動く城" data-category="动画 奇幻 冒险" data-region="日本">
+                <div class="movie-title">哈尔的移动城堡 - ハウルの動く城</div>
+                <div class="movie-info">类别：动画 奇幻 冒险</div>
+                <div class="movie-info">地区：日本</div>
+                <div class="movie-info">时长：119 分钟</div>
+                <div class="movie-info">上映时间：2004-09-05 上映</div>
+                <div class="movie-score">评分：8.9</div>
+            </div>
+            <div class="movie-card" data-title="盗梦空间 - Inception" data-category="剧情 科幻 悬疑 冒险" data-region="美国、英国">
+                <div class="movie-title">盗梦空间 - Inception</div>
+                <div class="movie-info">类别：剧情 科幻 悬疑 冒险</div>
+                <div class="movie-info">地区：美国、英国</div>
+                <div class="movie-info">时长：148 分钟</div>
+                <div class="movie-info">上映时间：2010-09-01 上映</div>
+                <div class="movie-score">评分：8.9</div>
+            </div>
+            <div class="movie-card" data-title="忠犬八公的故事 - Hachi: A Dog's Tale" data-category="剧情" data-region="美国、英国">
+                <div class="movie-title">忠犬八公的故事 - Hachi: A Dog's Tale</div>
+                <div class="movie-info">类别：剧情</div>
+                <div class="movie-info">地区：美国、英国</div>
+                <div class="movie-info">时长：93 分钟</div>
+                <div class="movie-info">上映时间：2009-06-13 上映</div>
+                <div class="movie-score">评分：8.9</div>
+            </div>
+            <div class="movie-card" data-title="拯救大兵瑞恩 - Saving Private Ryan" data-category="剧情 历史 战争" data-region="美国">
+                <div class="movie-title">拯救大兵瑞恩 - Saving Private Ryan</div>
+                <div class="movie-info">类别：剧情 历史 战争</div>
+                <div class="movie-info">地区：美国</div>
+                <div class="movie-info">时长：169 分钟</div>
+                <div class="movie-info">上映时间：1998-11-13 上映</div>
+                <div class="movie-score">评分：8.9</div>
+            </div>
+            <div class="movie-card" data-title="活着 - To Live" data-category="剧情 家庭 历史" data-region="中国大陆、中国香港">
+                <div class="movie-title">活着 - To Live</div>
+                <div class="movie-info">类别：剧情 家庭 历史</div>
+                <div class="movie-info">地区：中国大陆、中国香港</div>
+                <div class="movie-info">时长：132 分钟</div>
+                <div class="movie-info">上映时间：1994-05-17 上映</div>
+                <div class="movie-score">评分：9.0</div>
+            </div>
+            <div class="movie-card" data-title="机器人总动员 - WALL·E" data-category="喜剧 科幻 动画" data-region="美国">
+                <div class="movie-title">机器人总动员 - WALL·E</div>
+                <div class="movie-info">类别：喜剧 科幻 动画</div>
+                <div class="movie-info">地区：美国</div>
+                <div class="movie-info">时长：98 分钟</div>
+                <div class="movie-info">上映时间：2008-06-27 上映</div>
+                <div class="movie-score">评分：9.0</div>
+            </div>
+            <div class="movie-card" data-title="天堂电影院 - Nuovo Cinema Paradiso" data-category="剧情 爱情" data-region="意大利、法国">
+                <div class="movie-title">天堂电影院 - Nuovo Cinema Paradiso</div>
+                <div class="movie-info">类别：剧情 爱情</div>
+                <div class="movie-info">地区：意大利、法国</div>
+                <div class="movie-info">时长：155 分钟</div>
+                <div class="movie-info">上映时间：1988-11-17 上映</div>
+                <div class="movie-score">评分：9.0</div>
+            </div>
+            <div class="movie-card" data-title="指环王2：双塔奇兵 - The Lord of the Rings: The Two Towers" data-category="剧情 动作 奇幻 冒险" data-region="美国、新西兰">
+                <div class="movie-title">指环王2：双塔奇兵 - The Lord of the Rings: The Two Towers</div>
+                <div class="movie-info">类别：剧情 动作 奇幻 冒险</div>
+                <div class="movie-info">地区：美国、新西兰</div>
+                <div class="movie-info">时长：179 分钟</div>
+                <div class="movie-info">上映时间：2003-04-25 上映</div>
+                <div class="movie-score">评分：9.0</div>
+            </div>
+            <div class="movie-card" data-title="指环王1：护戒使者 - The Lord of the Rings: The Fellowship of the Ring" data-category="剧情 动作 奇幻 冒险" data-region="新西兰、美国">
+                <div class="movie-title">指环王1：护戒使者 - The Lord of the Rings: The Fellowship of the Ring</div>
+                <div class="movie-info">类别：剧情 动作 奇幻 冒险</div>
+                <div class="movie-info">地区：新西兰、美国</div>
+                <div class="movie-info">时长：178 分钟</div>
+                <div class="movie-info">上映时间：2002-04-04 上映</div>
+                <div class="movie-score">评分：9.0</div>
+            </div>
+            <div class="movie-card" data-title="射雕英雄传之东成西就 - The Eagle Shooting Heroes" data-category="喜剧 奇幻 武侠 古装" data-region="中国香港">
+                <div class="movie-title">射雕英雄传之东成西就 - The Eagle Shooting Heroes</div>
+                <div class="movie-info">类别：喜剧 奇幻 武侠 古装</div>
+                <div class="movie-info">地区：中国香港</div>
+                <div class="movie-info">时长：113 分钟</div>
+                <div class="movie-info">上映时间：1993-02-05 上映</div>
+                <div class="movie-score">评分：9.0</div>
+            </div>
+            <div class="movie-card" data-title="蝙蝠侠：黑暗骑士 - The Dark Knight" data-category="剧情 动作 科幻 惊悚 犯罪" data-region="美国、英国">
+                <div class="movie-title">蝙蝠侠：黑暗骑士 - The Dark Knight</div>
+                <div class="movie-info">类别：剧情 动作 科幻 惊悚 犯罪</div>
+                <div class="movie-info">地区：美国、英国</div>
+                <div class="movie-info">时长：152 分钟</div>
+                <div class="movie-info">上映时间：2008-07-14 上映</div>
+                <div class="movie-score">评分：9.0</div>
+            </div>
+            <div class="movie-card" data-title="无间道 - Infernal Affairs" data-category="剧情 悬疑 犯罪" data-region="中国香港">
+                <div class="movie-title">无间道 - Infernal Affairs</div>
+                <div class="movie-info">类别：剧情 悬疑 犯罪</div>
+                <div class="movie-info">地区：中国香港</div>
+                <div class="movie-info">时长：101 分钟</div>
+                <div class="movie-info">上映时间：2003-09-05 上映</div>
+                <div class="movie-score">评分：9.0</div>
+            </div>
+            <div class="movie-card" data-title="教父2 - The Godfather: Part Ⅱ" data-category="剧情 犯罪" data-region="美国">
+                <div class="movie-title">教父2 - The Godfather: Part Ⅱ</div>
+                <div class="movie-info">类别：剧情 犯罪</div>
+                <div class="movie-info">地区：美国</div>
+                <div class="movie-info">时长：202 分钟</div>
+                <div class="movie-info">上映时间：1974-12-12 上映</div>
+                <div class="movie-score">评分：9.0</div>
+            </div>
+            <div class="movie-card" data-title="加勒比海盗 - Pirates of the Caribbean: The Curse of the Black Pearl" data-category="动作 奇幻 冒险" data-region="美国">
+                <div class="movie-title">加勒比海盗 - Pirates of the Caribbean: The Curse of the Black Pearl</div>
+                <div class="movie-info">类别：动作 奇幻 冒险</div>
+                <div class="movie-info">地区：美国</div>
+                <div class="movie-info">时长：143 分钟</div>
+                <div class="movie-info">上映时间：2003-11-21 上映</div>
+                <div class="movie-score">评分：9.0</div>
+            </div>
+            <div class="movie-card" data-title="哈利·波特与魔法石 - Harry Potter and the Sorcerer's Stone" data-category="奇幻 冒险" data-region="美国、英国">
+                <div class="movie-title">哈利·波特与魔法石 - Harry Potter and the Sorcerer's Stone</div>
+                <div class="movie-info">类别：奇幻 冒险</div>
+                <div class="movie-info">地区：美国、英国</div>
+                <div class="movie-info">时长：152 分钟</div>
+                <div class="movie-info">上映时间：2002-01-26 上映</div>
+                <div class="movie-score">评分：9.0</div>
+            </div>
+            <div class="movie-card" data-title="指环王3：王者无敌 - The Lord of the Rings: The Return of the King" data-category="剧情 动作 奇幻 冒险" data-region="美国、新西兰">
+                <div class="movie-title">指环王3：王者无敌 - The Lord of the Rings: The Return of the King</div>
+                <div class="movie-info">类别：剧情 动作 奇幻 冒险</div>
+                <div class="movie-info">地区：美国、新西兰</div>
+                <div class="movie-info">时长：201 分钟</div>
+                <div class="movie-info">上映时间：2004-03-15 上映</div>
+                <div class="movie-score">评分：9.0</div>
+            </div>
+            <div class="movie-card" data-title="黑客帝国 - The Matrix" data-category="动作 科幻" data-region="美国、澳大利亚">
+                <div class="movie-title">黑客帝国 - The Matrix</div>
+                <div class="movie-info">类别：动作 科幻</div>
+                <div class="movie-info">地区：美国、澳大利亚</div>
+                <div class="movie-info">时长：136 分钟</div>
+                <div class="movie-info">上映时间：2000-01-14 上映</div>
+                <div class="movie-score">评分：9.0</div>
+            </div>
+            <div class="movie-card" data-title="剪刀手爱德华 - Edward Scissorhands" data-category="剧情 爱情 奇幻" data-region="美国">
+                <div class="movie-title">剪刀手爱德华 - Edward Scissorhands</div>
+                <div class="movie-info">类别：剧情 爱情 奇幻</div>
+                <div class="movie-info">地区：美国</div>
+                <div class="movie-info">时长：105 分钟</div>
+                <div class="movie-info">上映时间：1990-12-06 上映</div>
+                <div class="movie-score">评分：9.0</div>
+            </div>
+            <div class="movie-card" data-title="春光乍泄 - Happy Together" data-category="剧情 爱情" data-region="中国香港、日本、韩国">
+                <div class="movie-title">春光乍泄 - Happy Together</div>
+                <div class="movie-info">类别：剧情 爱情</div>
+                <div class="movie-info">地区：中国香港、日本、韩国</div>
+                <div class="movie-info">时长：96 分钟</div>
+                <div class="movie-info">上映时间：1997-05-17 上映</div>
+                <div class="movie-score">评分：9.0</div>
+            </div>
+            <div class="movie-card" data-title="大闹天宫 - The Monkey King" data-category="动画 奇幻" data-region="中国大陆">
+                <div class="movie-title">大闹天宫 - The Monkey King</div>
+                <div class="movie-info">类别：动画 奇幻</div>
+                <div class="movie-info">地区：中国大陆</div>
+                <div class="movie-info">时长：114 分钟</div>
+                <div class="movie-info">上映时间：1965-12-31 上映</div>
+                <div class="movie-score">评分：9.0</div>
+            </div>
+            <div class="movie-card" data-title="天空之城 - 天空の城ラピュタ" data-category="动画 奇幻 冒险" data-region="日本">
+                <div class="movie-title">天空之城 - 天空の城ラピュタ</div>
+                <div class="movie-info">类别：动画 奇幻 冒险</div>
+                <div class="movie-info">地区：日本</div>
+                <div class="movie-info">时长：125 分钟</div>
+                <div class="movie-info">上映时间：1992-05-01 上映</div>
+                <div class="movie-score">评分：9.0</div>
+            </div>
+            <div class="movie-card" data-title="音乐之声 - The Sound of Music" data-category="剧情 爱情 歌舞 传记" data-region="美国">
+                <div class="movie-title">音乐之声 - The Sound of Music</div>
+                <div class="movie-info">类别：剧情 爱情 歌舞 传记</div>
+                <div class="movie-info">地区：美国</div>
+                <div class="movie-info">时长：174 分钟</div>
+                <div class="movie-info">上映时间：1965-03-02 上映</div>
+                <div class="movie-score">评分：9.0</div>
+            </div>
+            <div class="movie-card" data-title="辛德勒的名单 - Schindler's List" data-category="剧情 历史 战争" data-region="美国">
+                <div class="movie-title">辛德勒的名单 - Schindler's List</div>
+                <div class="movie-info">类别：剧情 历史 战争</div>
+                <div class="movie-info">地区：美国</div>
+                <div class="movie-info">时长：195 分钟</div>
+                <div class="movie-info">上映时间：1993-11-30 上映</div>
+                <div class="movie-score">评分：9.5</div>
+            </div>
+            <div class="movie-card" data-title="魂断蓝桥 - Waterloo Bridge" data-category="剧情 爱情 战争" data-region="美国">
+                <div class="movie-title">魂断蓝桥 - Waterloo Bridge</div>
+                <div class="movie-info">类别：剧情 爱情 战争</div>
+                <div class="movie-info">地区：美国</div>
+                <div class="movie-info">时长：108 分钟</div>
+                <div class="movie-info">上映时间：1940-05-17 上映</div>
+                <div class="movie-score">评分：9.5</div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const movieCards = document.querySelectorAll('.movie-card');
+            const noResults = document.querySelector('.no-results');
+            let lastHighlighted = null;
+
+            function searchMovies() {
+                const searchTerm = searchInput.value.toLowerCase();
+                let hasResults = false;
+
+                movieCards.forEach(card => {
+                    const title = card.dataset.title.toLowerCase();
+                    const category = card.dataset.category.toLowerCase();
+                    const region = card.dataset.region.toLowerCase();
+                    
+                    if (title.includes(searchTerm) || 
+                        category.includes(searchTerm) || 
+                        region.includes(searchTerm)) {
+                        card.style.display = 'block';
+                        hasResults = true;
+                        
+                        // 如果完全匹配电影名，高亮显示
+                        if (title === searchTerm) {
+                            if (lastHighlighted) {
+                                lastHighlighted.classList.remove('highlight');
+                            }
+                            card.classList.add('highlight');
+                            lastHighlighted = card;
+                            
+                            // 滚动到高亮的电影卡片
+                            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                noResults.style.display = hasResults ? 'none' : 'block';
+            }
+
+            searchInput.addEventListener('input', searchMovies);
+            
+            // 添加按下回车键时的搜索功能
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchMovies();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
