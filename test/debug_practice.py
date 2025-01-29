@@ -49,7 +49,6 @@ def main():
     processed = process_list(numbers)
     print(f"原始列表：{numbers}")
     print(f"处理后的列表：{processed}")
-
     # 3. 测试复杂计算 (可以使用Shift+F8跳出子函数)
     print("\n测试复杂计算：")
     x, y = 3, 4
@@ -59,3 +58,4 @@ def main():
 if __name__ == "__main__":  
     # 在这里设置断点，然后按Shift+F9开始调试
     main() 
+    print("程序结束 Git来了")
