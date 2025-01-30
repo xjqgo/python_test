@@ -59,4 +59,4 @@ if __name__ == "__main__":
     # 在这里设置断点，然后按Shift+F9开始调试
     main() 
     print("程序结束 Git来了")
-    print("dev分支合并到main分支")
+    print("现在是main分支了")
