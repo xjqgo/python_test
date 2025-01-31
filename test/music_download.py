@@ -116,6 +116,7 @@ class MusicDownloader:
         if isinstance(tsids, str):
             tsids = [tsids]
         
+        start_time = time.time()  # 记录开始时间
         download_count = 0
         failed_count = 0
         downloaded_songs = []  # 存储下载成功的歌曲信息
@@ -150,6 +151,10 @@ class MusicDownloader:
         print(f"\n共有: {len(tsids)} 首歌曲")
         print(f"下载完成: {download_count} 首歌曲")
         print(f"VIP无法下载: {failed_count} 首歌曲")
+        
+        # 计算并打印总下载时间
+        total_time = time.time() - start_time
+        print(f"总下载时间: {total_time:.2f} 秒")
 
 if __name__ == "__main__":
     # 创建下载器实例
