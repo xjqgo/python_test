@@ -1,0 +1,2 @@
+requests>=2.31.0    # 用于发送 HTTP 请求下载音乐
+pyinstaller>=6.3.0  # 用于将 Python 程序打包成 exe 文件

@@ -166,16 +166,30 @@ def is_running_in_exe():
     """检查是否在exe环境中运行"""
     return getattr(sys, 'frozen', False)
 
-if __name__ == "__main__":
-    # 用户输入
-    keyword = input("请输入要下载的歌手名（如：胡彦斌）：")
-    max_downloads_input = input("请输入最大下载数（留空表示全部下载）：")
-    max_downloads = int(max_downloads_input) if max_downloads_input else None
-
-    # 创建管理器实例并开始处理
-    manager = MusicManager()
-    manager.process(keyword, max_downloads)
-    
-    # 在exe环境中等待用户按键退出
+def get_resource_path(relative_path):
+    """获取资源文件的绝对路径"""
     if is_running_in_exe():
-        input("\n按回车键退出...")
+        # 如果是打包后的 exe，使用 sys._MEIPASS
+        base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
+    else:
+        # 如果是开发环境，使用当前目录
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
+if __name__ == "__main__":
+    try:
+        # 用户输入
+        keyword = input("请输入要下载的歌手名（如：胡彦斌）：")
+        max_downloads_input = input("请输入最大下载数（留空表示全部下载）：")
+        max_downloads = int(max_downloads_input) if max_downloads_input else None
+
+        # 创建管理器实例并开始处理
+        manager = MusicManager()
+        manager.process(keyword, max_downloads)
+        
+    except Exception as e:
+        print(f"\n程序运行出错: {e}")
+    finally:
+        # 在exe环境中等待用户按键退出
+        if is_running_in_exe():
+            input("\n按回车键退出...")

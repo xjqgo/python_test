@@ -1,3 +1,11 @@
 # 忽略所有mp3文件和mp3目录
 *.mp3
 mp3/
+build/
+dist/
+*.spec
+*.spec.py
+*.spec.pyc
+*.spec.pyo
+*.spec.pyd
+*.spec.pyw
