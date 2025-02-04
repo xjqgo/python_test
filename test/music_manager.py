@@ -175,9 +175,16 @@ class MusicManagerGUI:
         # 创建音乐管理器实例
         self.manager = MusicManager()
         
-        # 创建主框架
+        # 创建主框架并配置列宽
         self.main_frame = ttk.Frame(self.root, padding="10")
         self.main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        
+        # 配置主窗口和主框架的列宽和行高
+        self.root.columnconfigure(0, weight=1)
+        self.root.rowconfigure(0, weight=1)
+        self.main_frame.columnconfigure(0, weight=1)
+        self.main_frame.rowconfigure(1, weight=2)  # 下载列表区域占比更大
+        self.main_frame.rowconfigure(2, weight=1)  # 日志区域占比正常
         
         # 搜索区域
         self.create_search_area()
@@ -206,7 +213,8 @@ class MusicManagerGUI:
     def create_search_area(self):
         # 搜索框架
         search_frame = ttk.LabelFrame(self.main_frame, text="搜索", padding="5")
-        search_frame.grid(row=0, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=5)
+        search_frame.grid(row=0, column=0, sticky=(tk.W, tk.E), pady=5)
+        search_frame.columnconfigure(1, weight=1)  # 让搜索输入框可以扩展
         
         # 搜索输入
         ttk.Label(search_frame, text="歌手名:").grid(row=0, column=0, padx=5)
@@ -228,30 +236,36 @@ class MusicManagerGUI:
         
         # 最大下载数
         ttk.Label(search_frame, text="最大下载数:").grid(row=0, column=3, padx=5)
-        self.max_downloads_var = tk.StringVar(value="10")
+        self.max_downloads_var = tk.StringVar(value="50")
         self.max_downloads_entry = ttk.Entry(search_frame, textvariable=self.max_downloads_var, width=10)
         self.max_downloads_entry.grid(row=0, column=4, padx=5)
+        
+        # 清空目录按钮 - 移到这里
+        self.clear_dir_btn = ttk.Button(search_frame, text="清空目录", command=self.clear_download_dir)
+        self.clear_dir_btn.grid(row=0, column=5, padx=5)
 
     def create_download_list_area(self):
         # 下载列表框架
         list_frame = ttk.LabelFrame(self.main_frame, text="下载列表", padding="5")
-        list_frame.grid(row=1, column=0, columnspan=2, sticky=(tk.W, tk.E, tk.N, tk.S), pady=5)
+        list_frame.grid(row=1, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), pady=5)
+        list_frame.columnconfigure(0, weight=1)
+        list_frame.rowconfigure(0, weight=1)
         
         # 创建表格
         columns = ("选择", "序号", "歌曲名", "歌手", "状态")
         self.tree = ttk.Treeview(list_frame, columns=columns, show="headings", height=10)
         
         # 设置列标题和宽度
-        self.tree.heading("选择", text="☐")  # 使用方框符号作为标题
-        self.tree.column("选择", width=50, anchor="center")
+        self.tree.heading("选择", text="☐")
+        self.tree.column("选择", width=50, anchor="center", stretch=False)  # 固定宽度
         self.tree.heading("序号", text="序号")
-        self.tree.column("序号", width=50, anchor="center")
+        self.tree.column("序号", width=50, anchor="center", stretch=False)  # 固定宽度
         self.tree.heading("歌曲名", text="歌曲名")
-        self.tree.column("歌曲名", width=200)
+        self.tree.column("歌曲名", width=300, stretch=True)  # 可伸缩
         self.tree.heading("歌手", text="歌手")
-        self.tree.column("歌手", width=150)
+        self.tree.column("歌手", width=150, stretch=True)  # 可伸缩
         self.tree.heading("状态", text="状态")
-        self.tree.column("状态", width=100)
+        self.tree.column("状态", width=100, stretch=False)  # 固定宽度
         
         # 添加滚动条
         scrollbar = ttk.Scrollbar(list_frame, orient=tk.VERTICAL, command=self.tree.yview)
@@ -263,7 +277,7 @@ class MusicManagerGUI:
         
         # 下载按钮框架
         btn_frame = ttk.Frame(list_frame)
-        btn_frame.grid(row=1, column=0, columnspan=2, pady=5)
+        btn_frame.grid(row=1, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=5)
         
         # 全选/取消全选按钮
         self.select_all_btn = ttk.Button(btn_frame, text="全选", command=self.toggle_select_all)
@@ -273,9 +287,21 @@ class MusicManagerGUI:
         self.download_btn = ttk.Button(btn_frame, text="开始下载", command=self.start_download)
         self.download_btn.pack(side=tk.LEFT, padx=5)
         
-        # 打开下载目录按钮 - 移动到这里
+        # 打开下载目录按钮
         self.open_dir_btn = ttk.Button(btn_frame, text="打开下载目录", command=self.open_download_dir)
         self.open_dir_btn.pack(side=tk.LEFT, padx=5)
+        
+        # 进度条
+        self.progress_var = tk.DoubleVar()
+        self.progress_bar = ttk.Progressbar(list_frame, 
+                                          variable=self.progress_var,
+                                          maximum=100,
+                                          mode='determinate')
+        self.progress_bar.grid(row=2, column=0, sticky=(tk.W, tk.E), padx=5, pady=5)
+        
+        # 进度标签
+        self.progress_label = ttk.Label(list_frame, text="0%", width=6)
+        self.progress_label.grid(row=2, column=1, padx=5, pady=5)
         
         # 绑定点击事件
         self.tree.bind('<Button-1>', self.on_click)
@@ -283,21 +309,27 @@ class MusicManagerGUI:
     def create_log_area(self):
         # 日志框架
         log_frame = ttk.LabelFrame(self.main_frame, text="日志", padding="5")
-        log_frame.grid(row=2, column=0, columnspan=2, sticky=(tk.W, tk.E, tk.N, tk.S), pady=5)
+        log_frame.grid(row=2, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), pady=5)
+        log_frame.columnconfigure(0, weight=1)
+        log_frame.rowconfigure(0, weight=1)
         
         # 日志文本框
-        self.log_text = scrolledtext.ScrolledText(log_frame, height=10, width=80)
+        self.log_text = scrolledtext.ScrolledText(log_frame, height=10)  # 移除 width 参数
         self.log_text.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         
+        # 按钮框架
+        btn_frame = ttk.Frame(log_frame)
+        btn_frame.grid(row=1, column=0, sticky=(tk.W, tk.E), pady=(5, 0))  # 增加顶部间距，移除底部间距
+        
         # 清除日志按钮
-        self.clear_log_btn = ttk.Button(log_frame, text="清除日志", command=self.clear_log)
-        self.clear_log_btn.grid(row=1, column=0, pady=5)
+        self.clear_log_btn = ttk.Button(btn_frame, text="清除日志", command=self.clear_log)
+        self.clear_log_btn.pack(side=tk.LEFT, padx=5)
 
     def create_status_bar(self):
         # 状态栏
         self.status_var = tk.StringVar()
-        self.status_bar = ttk.Label(self.main_frame, textvariable=self.status_var, relief=tk.SUNKEN)
-        self.status_bar.grid(row=3, column=0, columnspan=2, sticky=(tk.W, tk.E))
+        self.status_bar = ttk.Label(self.root, textvariable=self.status_var, relief=tk.SUNKEN)
+        self.status_bar.grid(row=1, column=0, sticky=(tk.W, tk.E))  # 放在root的第二行
         self.status_var.set("就绪")
 
     def log(self, message):
@@ -473,10 +505,14 @@ class MusicManagerGUI:
 
     def download_worker(self):
         """下载工作线程"""
-        start_time = time.time()  # 记录开始时间
-        total_downloads = self.song_queue.qsize()  # 总下载数
-        success_count = 0  # 成功下载数
-        failed_count = 0  # 失败下载数
+        start_time = time.time()
+        total_downloads = self.song_queue.qsize()
+        success_count = 0
+        failed_count = 0
+        
+        # 重置进度条
+        self.root.after(0, lambda: self.progress_var.set(0))
+        self.root.after(0, lambda: self.progress_label.config(text="0%"))
         
         while not self.song_queue.empty() and self.is_downloading:
             try:
@@ -487,24 +523,39 @@ class MusicManagerGUI:
                 self.tree.set(item_id, "状态", "下载中...")
                 self.root.update()
                 
-                # 执行下载
                 try:
                     file_name = f"{index:02d}. {song_name} - {artist_name}"
                     file_name = "".join(c for c in file_name if c not in r'\/:*?"<>|')
                     file_path = os.path.join(self.manager.mp3_dir, f"{file_name}.mp3")
                     
-                    # 下载文件
+                    # 下载文件并显示进度
                     response = requests.get(mp3_url, stream=True)
                     response.raise_for_status()
                     
+                    # 获取文件大小
+                    total_size = int(response.headers.get('content-length', 0))
+                    block_size = 8192
+                    downloaded = 0
+                    
                     with open(file_path, 'wb') as f:
-                        for chunk in response.iter_content(chunk_size=8192):
+                        for chunk in response.iter_content(chunk_size=block_size):
                             if chunk and self.is_downloading:
                                 f.write(chunk)
+                                downloaded += len(chunk)
+                                # 更新单个文件的下载进度
+                                if total_size:
+                                    file_progress = (downloaded / total_size) * 100
+                                    # 计算总体进度
+                                    total_progress = ((success_count + file_progress/100) / total_downloads) * 100
+                                    self.root.after(0, lambda p=total_progress: self.update_progress(p))
                     
                     self.tree.set(item_id, "状态", "完成")
                     self.log(f"下载完成: {file_name}")
                     success_count += 1
+                    # 更新总体进度
+                    total_progress = (success_count / total_downloads) * 100
+                    self.root.after(0, lambda p=total_progress: self.update_progress(p))
+                    
                 except Exception as e:
                     self.tree.set(item_id, "状态", "下载失败")
                     self.log(f"下载失败: {song_name} - {str(e)}")
@@ -659,6 +710,108 @@ class MusicManagerGUI:
         except Exception as e:
             self.log(f"打开下载目录失败: {str(e)}")
             messagebox.showerror("错误", f"无法打开下载目录: {str(e)}")
+
+    def update_progress(self, progress):
+        """更新进度条和标签"""
+        self.progress_var.set(progress)
+        self.progress_label.config(text=f"{progress:.1f}%")
+
+    def delete_selected(self):
+        """删除选中的文件"""
+        # 获取选中的项目
+        selected_items = [item for item in self.tree.get_children() if self.tree.set(item, "选择") == "☑"]
+        
+        if not selected_items:
+            messagebox.showwarning("警告", "请选择要删除的文件")
+            return
+        
+        # 确认删除
+        if not messagebox.askyesno("确认", "确定要删除选中的文件吗？\n此操作将同时删除本地文件！"):
+            return
+        
+        deleted_count = 0
+        failed_count = 0
+        
+        for item in selected_items:
+            try:
+                # 获取文件信息
+                values = self.tree.item(item)['values']
+                if len(values) >= 4:  # 确保有足够的值
+                    song_name = values[2]
+                    artist_name = values[3]
+                    index = values[1]
+                    
+                    # 构建文件名
+                    file_name = f"{index:02d}. {song_name} - {artist_name}"
+                    file_name = "".join(c for c in file_name if c not in r'\/:*?"<>|')
+                    file_path = os.path.join(self.manager.mp3_dir, f"{file_name}.mp3")
+                    
+                    # 删除文件
+                    if os.path.exists(file_path):
+                        os.remove(file_path)
+                        self.log(f"已删除文件: {file_name}")
+                        deleted_count += 1
+                    else:
+                        self.log(f"文件不存在: {file_name}")
+                        failed_count += 1
+                    
+                    # 从列表中移除
+                    self.tree.delete(item)
+                
+            except Exception as e:
+                self.log(f"删除失败: {str(e)}")
+                failed_count += 1
+        
+        # 显示删除结果
+        if deleted_count > 0 or failed_count > 0:
+            result_message = f"删除完成\n成功: {deleted_count} 个\n失败: {failed_count} 个"
+            messagebox.showinfo("删除结果", result_message)
+            self.status_var.set(f"删除完成 - 成功: {deleted_count}, 失败: {failed_count}")
+
+    def clear_download_dir(self):
+        """清空下载目录"""
+        # 获取下载目录路径
+        download_path = os.path.abspath(self.manager.mp3_dir)
+        
+        # 检查目录是否存在
+        if not os.path.exists(download_path):
+            messagebox.showwarning("警告", "下载目录不存在")
+            return
+        
+        # 获取目录中的所有MP3文件
+        mp3_files = [f for f in os.listdir(download_path) if f.lower().endswith('.mp3')]
+        
+        if not mp3_files:
+            messagebox.showinfo("提示", "下载目录已经是空的")
+            return
+        
+        # 确认清空操作
+        if not messagebox.askyesno("确认", f"确定要删除下载目录中的所有文件吗？\n共有 {len(mp3_files)} 个文件\n此操作不可恢复！"):
+            return
+        
+        # 执行删除操作
+        deleted_count = 0
+        failed_count = 0
+        
+        for filename in mp3_files:
+            try:
+                file_path = os.path.join(download_path, filename)
+                os.remove(file_path)
+                self.log(f"已删除文件: {filename}")
+                deleted_count += 1
+            except Exception as e:
+                self.log(f"删除失败 {filename}: {str(e)}")
+                failed_count += 1
+        
+        # 清空下载列表
+        for item in self.tree.get_children():
+            if self.tree.set(item, "状态") == "完成":  # 只删除已下载完成的项目
+                self.tree.delete(item)
+        
+        # 显示删除结果
+        result_message = f"目录清空完成\n成功: {deleted_count} 个\n失败: {failed_count} 个"
+        messagebox.showinfo("清空结果", result_message)
+        self.status_var.set(f"目录清空完成 - 成功: {deleted_count}, 失败: {failed_count}")
 
 def is_running_in_exe():
     """检查是否在exe环境中运行"""
