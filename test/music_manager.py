@@ -231,10 +231,6 @@ class MusicManagerGUI:
         self.max_downloads_var = tk.StringVar(value="10")
         self.max_downloads_entry = ttk.Entry(search_frame, textvariable=self.max_downloads_var, width=10)
         self.max_downloads_entry.grid(row=0, column=4, padx=5)
-        
-        # 打开下载目录按钮
-        self.open_dir_btn = ttk.Button(search_frame, text="打开下载目录", command=self.open_download_dir)
-        self.open_dir_btn.grid(row=0, column=5, padx=5)
 
     def create_download_list_area(self):
         # 下载列表框架
@@ -276,6 +272,10 @@ class MusicManagerGUI:
         # 下载按钮
         self.download_btn = ttk.Button(btn_frame, text="开始下载", command=self.start_download)
         self.download_btn.pack(side=tk.LEFT, padx=5)
+        
+        # 打开下载目录按钮 - 移动到这里
+        self.open_dir_btn = ttk.Button(btn_frame, text="打开下载目录", command=self.open_download_dir)
+        self.open_dir_btn.pack(side=tk.LEFT, padx=5)
         
         # 绑定点击事件
         self.tree.bind('<Button-1>', self.on_click)
