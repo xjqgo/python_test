@@ -251,9 +251,15 @@ class MusicManagerGUI:
         list_frame.columnconfigure(0, weight=1)
         list_frame.rowconfigure(0, weight=1)
         
+        # 创建容器框架来包含表格和滚动条
+        container = ttk.Frame(list_frame)
+        container.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        container.columnconfigure(0, weight=1)
+        container.rowconfigure(0, weight=1)
+        
         # 创建表格
         columns = ("选择", "序号", "歌曲名", "歌手", "状态")
-        self.tree = ttk.Treeview(list_frame, columns=columns, show="headings", height=10)
+        self.tree = ttk.Treeview(container, columns=columns, show="headings", height=10)
         
         # 设置列标题和宽度
         self.tree.heading("选择", text="☐")
@@ -267,17 +273,15 @@ class MusicManagerGUI:
         self.tree.heading("状态", text="状态")
         self.tree.column("状态", width=100, stretch=False)  # 固定宽度
         
-        # 添加滚动条
-        scrollbar = ttk.Scrollbar(list_frame, orient=tk.VERTICAL, command=self.tree.yview)
-        self.tree.configure(yscrollcommand=scrollbar.set)
-        
         # 放置表格和滚动条
         self.tree.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        scrollbar = ttk.Scrollbar(container, orient=tk.VERTICAL, command=self.tree.yview)
         scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
+        self.tree.configure(yscrollcommand=scrollbar.set)
         
         # 下载按钮框架
         btn_frame = ttk.Frame(list_frame)
-        btn_frame.grid(row=1, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=5)
+        btn_frame.grid(row=1, column=0, sticky=(tk.W, tk.E), pady=5)
         
         # 全选/取消全选按钮
         self.select_all_btn = ttk.Button(btn_frame, text="全选", command=self.toggle_select_all)
