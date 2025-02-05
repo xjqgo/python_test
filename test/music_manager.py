@@ -8,6 +8,7 @@ import tkinter as tk
 from tkinter import ttk, scrolledtext, messagebox
 import threading
 from queue import Queue
+import concurrent.futures
 
 class MusicManager:
     def __init__(self):
@@ -441,40 +442,61 @@ class MusicManagerGUI:
                 vip_count = 0    # 记录VIP歌曲数量
                 total_count = len(songs)  # 总歌曲数
                 
-                for i, song_id in enumerate(songs, 1):
+                # 批量获取歌曲信息
+                batch_size = 10  # 每批处理的歌曲数量
+                for i in range(0, len(songs), batch_size):
                     if not self.is_searching:  # 检查是否被取消
                         break
+                        
+                    batch_songs = songs[i:i+batch_size]
                     # 更新搜索进度
-                    progress_text = f"正在获取... ({i}/{total_count})\n已过滤 {vip_count} 首VIP歌曲"
+                    progress_text = f"正在获取... ({i+1}-{min(i+batch_size, total_count)}/{total_count})\n已过滤 {vip_count} 首VIP歌曲"
                     self.root.after(0, lambda t=progress_text: self.show_search_progress(t))
                     
-                    # 获取歌曲信息
-                    mp3_url, song_name, artist_name = self.manager.get_song_info(song_id)
+                    # 创建线程池批量获取歌曲信息
+                    with concurrent.futures.ThreadPoolExecutor(max_workers=batch_size) as executor:
+                        future_to_song = {
+                            executor.submit(self.manager.get_song_info, song_id): (song_id, i+idx) 
+                            for idx, song_id in enumerate(batch_songs)
+                        }
+                        
+                        for future in concurrent.futures.as_completed(future_to_song):
+                            song_id, batch_index = future_to_song[future]
+                            try:
+                                mp3_url, song_name, artist_name = future.result()
+                                
+                                # 使用after方法在主线程中更新UI
+                                success = False
+                                # 使用valid_count + 1作为序号，确保连续递增
+                                self.root.after(0, lambda: setattr(self, '_temp_result',
+                                    self.update_search_result(valid_count + 1, song_id, mp3_url, song_name, artist_name)))
+                                self.root.update()
+                                if hasattr(self, '_temp_result'):
+                                    success = self._temp_result
+                                    delattr(self, '_temp_result')
+                                
+                                if success:
+                                    valid_count += 1
+                                else:
+                                    vip_count += 1
+                                    
+                            except Exception as e:
+                                self.log(f"获取歌曲信息失败: {str(e)}")
+                                vip_count += 1
                     
-                    # 使用after方法在主线程中更新UI，并检查是否为VIP歌曲
-                    success = False
-                    self.root.after(0, lambda: setattr(self, '_temp_result', 
-                        self.update_search_result(valid_count + 1, song_id, mp3_url, song_name, artist_name)))
-                    self.root.update()
-                    if hasattr(self, '_temp_result'):
-                        success = self._temp_result
-                        delattr(self, '_temp_result')
-                    
-                    if success:
-                        valid_count += 1
-                    else:
-                        vip_count += 1
-                    
-                    time.sleep(0.1)  # 添加小延迟，避免请求过快
+                    time.sleep(0.1)  # 每批处理后短暂延迟
                 
                 if valid_count > 0:
-                    self.root.after(0, lambda: self.status_var.set(
-                        f"找到 {valid_count} 首可下载歌曲 (共 {total_count} 首，{vip_count} 首VIP歌曲被过滤)"))
+                    result_msg = f"找到 {valid_count} 首可下载歌曲 (共 {total_count} 首，{vip_count} 首VIP歌曲被过滤)"
+                    self.root.after(0, lambda: self.status_var.set(result_msg))
+                    self.root.after(0, lambda: self.log(f"\n搜索完成：\n{result_msg}"))
                 else:
-                    self.root.after(0, lambda: self.status_var.set(
-                        f"未找到可下载歌曲 (共 {total_count} 首，全部为VIP歌曲)"))
+                    result_msg = f"未找到可下载歌曲 (共 {total_count} 首，全部为VIP歌曲)"
+                    self.root.after(0, lambda: self.status_var.set(result_msg))
+                    self.root.after(0, lambda: self.log(f"\n搜索完成：\n{result_msg}"))
             else:
                 self.root.after(0, lambda: self.status_var.set("未找到歌曲"))
+                self.root.after(0, lambda: self.log("\n搜索完成：未找到歌曲"))
                 
         except Exception as e:
             self.root.after(0, lambda: self.log(f"搜索出错: {str(e)}"))
@@ -523,6 +545,20 @@ class MusicManagerGUI:
         self.root.after(0, lambda: self.progress_var.set(0))
         self.root.after(0, lambda: self.progress_label.config(text="0%"))
         
+        # 获取所有要下载的项目并按序号排序
+        download_items = []
+        while not self.song_queue.empty():
+            item_id, song_info = self.song_queue.get()
+            download_items.append((item_id, song_info))
+            self.song_queue.task_done()
+        
+        # 按序号排序
+        download_items.sort(key=lambda x: int(self.tree.set(x[0], '序号')))
+        
+        # 重新放入队列
+        for item in download_items:
+            self.song_queue.put(item)
+        
         while not self.song_queue.empty() and self.is_downloading:
             try:
                 item_id, song_info = self.song_queue.get()
@@ -533,8 +569,9 @@ class MusicManagerGUI:
                 self.root.update()
                 
                 try:
-                    # 使用列表中的序号作为文件名序号，而不是success_count
-                    file_name = f"{int(self.tree.set(item_id, '序号')):02d}. {song_name} - {artist_name}"
+                    # 使用列表中的序号作为文件名序号
+                    current_index = int(self.tree.set(item_id, '序号'))
+                    file_name = f"{current_index:02d}. {song_name} - {artist_name}"
                     file_name = "".join(c for c in file_name if c not in r'\/:*?"<>|')
                     file_path = os.path.join(self.manager.mp3_dir, f"{file_name}.mp3")
                     
