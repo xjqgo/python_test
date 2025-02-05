@@ -533,7 +533,8 @@ class MusicManagerGUI:
                 self.root.update()
                 
                 try:
-                    file_name = f"{index:02d}. {song_name} - {artist_name}"
+                    # 使用列表中的序号作为文件名序号，而不是success_count
+                    file_name = f"{int(self.tree.set(item_id, '序号')):02d}. {song_name} - {artist_name}"
                     file_name = "".join(c for c in file_name if c not in r'\/:*?"<>|')
                     file_path = os.path.join(self.manager.mp3_dir, f"{file_name}.mp3")
                     
