@@ -310,16 +310,21 @@ class MusicManagerGUI:
         # 日志框架
         log_frame = ttk.LabelFrame(self.main_frame, text="日志", padding="5")
         log_frame.grid(row=2, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), pady=5)
-        log_frame.columnconfigure(0, weight=1)
+        log_frame.columnconfigure(0, weight=8)  # 日志框占80%
+        log_frame.columnconfigure(1, weight=2)  # 空白区域占20%
         log_frame.rowconfigure(0, weight=1)
         
         # 日志文本框
         self.log_text = scrolledtext.ScrolledText(log_frame, height=10)  # 移除 width 参数
         self.log_text.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         
+        # 添加一个空白框架来控制宽度
+        spacer = ttk.Frame(log_frame)
+        spacer.grid(row=0, column=1, sticky=(tk.W, tk.E, tk.N, tk.S))
+        
         # 按钮框架
         btn_frame = ttk.Frame(log_frame)
-        btn_frame.grid(row=1, column=0, sticky=(tk.W, tk.E), pady=(5, 0))  # 增加顶部间距，移除底部间距
+        btn_frame.grid(row=1, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(5, 0))
         
         # 清除日志按钮
         self.clear_log_btn = ttk.Button(btn_frame, text="清除日志", command=self.clear_log)
